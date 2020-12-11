@@ -1,9 +1,20 @@
 import requests
 import json
 from datetime import datetime
+from dbhandler import DbHandler
+import time
 
 
-def get_quote(symbol: str) -> None:
+"""
+    Fetch an instrument's financial data.
+"""
+
+db_handler = DbHandler()
+
+
+def get_quote(connection, symbol: str) -> None:
+
+    #TODO: See if we can save memory by having these be shared, but really not a problem rn.
 
     headers = {
         "authority": "app-money.tmx.com",
@@ -12,7 +23,8 @@ def get_quote(symbol: str) -> None:
         "accept": "*/*",
         "authorization": "",
         "locale": "en",
-        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/85.0.4183.121 Safari/537.36 OPR/71.0.3770.228",
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) "
+                      "Chrome/85.0.4183.121 Safari/537.36 OPR/71.0.3770.228",
         "content-type": "application/json",
         "origin": "https://money.tmx.com",
         "referer": "https://money.tmx.com/en/quote/" + symbol,
@@ -25,16 +37,48 @@ def get_quote(symbol: str) -> None:
     request_body = {
         "operationName": "getQuoteBySymbol",
         "variables": {"symbol": symbol, "locale": "en"},
-        "query": "query getQuoteBySymbol($symbol: String, $locale: String) {\n  getQuoteBySymbol(symbol: $symbol, locale: $locale) {\n    symbol\n    name\n    price\n    priceChange\n    percentChange\n    exchangeName\n    exShortName\n    exchangeCode\n    marketPlace\n    sector\n    industry\n    volume\n    openPrice\n    dayHigh\n    dayLow\n    MarketCap\n    MarketCapAllClasses\n    peRatio\n    prevClose\n    dividendFrequency\n    dividendYield\n    dividendAmount\n    dividendCurrency\n    beta\n    eps\n    exDividendDate\n    shortDescription\n    longDescription\n    website\n    email\n    phoneNumber\n    fullAddress\n    employees\n    shareOutStanding\n    totalDebtToEquity\n    totalSharesOutStanding\n    sharesESCROW\n    vwap\n    dividendPayDate\n    weeks52high\n    weeks52low\n    alpha\n    averageVolume10D\n    averageVolume30D\n    averageVolume50D\n    priceToBook\n    priceToCashFlow\n    returnOnEquity\n    returnOnAssets\n    day21MovingAvg\n    day50MovingAvg\n    day200MovingAvg\n    dividend3Years\n    dividend5Years\n    datatype\n    __typename\n  }\n}\n",
+        "query": "query getQuoteBySymbol($symbol: String, $locale: String) { getQuoteBySymbol(symbol: $symbol, "
+                 "locale: $locale) { symbol name price priceChange percentChange "
+                 "exchangeName exShortName exchangeCode marketPlace sector industry "
+                 "volume openPrice\n    dayHigh\n    dayLow\n    MarketCap\n    MarketCapAllClasses  "
+                 "peRatio prevClose dividendFrequency\n    dividendYield\n    dividendAmount\n    "
+                 "dividendCurrency\n beta\n    eps\n    exDividendDate\n    shortDescription\n    "
+                 "longDescription\n website\n    email\n    phoneNumber\n    fullAddress\n    employees\n    "
+                 "shareOutStanding\n totalDebtToEquity\n    totalSharesOutStanding\n    sharesESCROW\n    vwap\n   "
+                 " dividendPayDate\n weeks52high\n    weeks52low\n alpha\n    averageVolume10D\n    "
+                 "averageVolume30D\n averageVolume50D\n    priceToBook\n priceToCashFlow\n returnOnEquity\n  "
+                 "  returnOnAssets\n day21MovingAvg\n    day50MovingAvg\n day200MovingAvg\n dividend3Years\n "
+                 "   dividend5Years\n datatype\n __typename }}",
     }
 
+    start_time = time.perf_counter()
+
+    # TODO: Share Sessions between calls
     s = requests.Session()
     r = s.post("https://app-money.tmx.com/graphql", headers=headers, json=request_body)
+    result = ""
 
     if r.status_code == 200:
-        with open("data/quotes/" + symbol + ".json", "w", encoding="utf-8") as outfile:
-            data = json.loads(r.text)
-            json.dump(data, outfile, indent=4)
+        data = json.loads(r.text)
+
+        quote_info = data["data"]["getQuoteBySymbol"]
+
+        quote_tuple = tuple(
+            [quote_info[k] if quote_info[k] != "" else None for k in quote_info.keys()]
+        )
+
+        # print(quote_tuple)
+        # print(len(quote_tuple))
+
+        # Save quote information in file
+        # with open("data/quotes/" + symbol + ".json", "w", encoding="utf-8") as outfile:
+        #     json.dump(data, outfile, indent=4)
+
+        result = db_handler.insert_quote(connection, quote_tuple)
+
+    end_time = time.perf_counter()
+    print(f"Scraped {result[0]} in {end_time - start_time} s")
+    print(result[0])
 
 
 def get_time_series(symbol: str, startDate: str, endDate: str, interval_min: int = 30) -> None:
@@ -80,6 +124,7 @@ def get_time_series(symbol: str, startDate: str, endDate: str, interval_min: int
 
 
 if __name__ == "__main__":
-    # get_quote("ACB")
+    conn = db_handler.create_connection()
+    get_quote(conn, "HIVE")
 
-    get_time_series("HIVE", "20191105", "20201105")
+    # get_time_series("HIVE", "20191105", "20201105")

@@ -4,18 +4,17 @@ import json
 import logging
 import sys
 
-
 logger = logging.getLogger(__name__)
 
-formater = logging.Formatter(
+formatter = logging.Formatter(
     "%(asctime)s — %(name)s — %(levelname)s — %(funcName)s:%(lineno)d — %(message)s"
 )
 
 console_handler = logging.StreamHandler(sys.stdout)
-console_handler.setFormatter(formater)
+console_handler.setFormatter(formatter)
 
 file_handler = logging.FileHandler("logs/symbols.log")
-file_handler.setFormatter(formater)
+file_handler.setFormatter(formatter)
 
 logger.addHandler(console_handler)
 logger.addHandler(file_handler)
@@ -67,9 +66,8 @@ def list_symbols():
     symbols_TSX.sort()
     symbols_TSXV.sort()
 
-    with open("data/symbol_lists/TSX.json", "w", encoding="utf-8") as out_tsx, open(
-        "data/symbol_lists/TSXV.json", "w", encoding="utf-8"
-    ) as out_tsxv:
+    with open("data/symbols/TSX.json", "w", encoding="utf-8") as out_tsx, open(
+            "data/symbols/TSXV.json", "w", encoding="utf-8") as out_tsxv:
         json.dump(symbols_TSX, out_tsx, ensure_ascii=True)
         json.dump(symbols_TSXV, out_tsxv, ensure_ascii=True)
 
@@ -80,12 +78,12 @@ if __name__ == "__main__":
 
     tsx = tsxv = []
 
-    with open("data/symbol_lists/TSX.json", "r") as infile:
+    with open("data/symbols/TSX.json", "r") as infile:
         tsx = json.load(infile)
 
-    with open("data/symbol_lists/TSXV.json", "r") as infile:
+    with open("data/symbols/TSXV.json", "r") as infile:
         tsxv = json.load(infile)
 
     print(f"Symbols listed on TSX:\t {len(tsx)}")
     print(f"Symbols listed on TSXV:\t {len(tsxv)}")
-    print(f"Total:\t\t\t {len(tsx)+len(tsxv)}")
+    print(f"Total:\t\t\t {len(tsx) + len(tsxv)}")
