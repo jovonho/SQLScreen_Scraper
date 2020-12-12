@@ -29,6 +29,7 @@
     Can easily bring the time down to 10 min. (look at numpy)
 
 TODO:
+- Have the symbols file check for symbols that are no longer listed and remove them from the DB 
 - Find a good timeseries database!
 - Implement Proper Logging
 - Optimize for time:

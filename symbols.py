@@ -30,6 +30,9 @@ def list_symbols():
     symbols_TSX = []
     symbols_TSXV = []
 
+    log_TSX = open("logs/symbols_TSX.log", "w")
+    log_TSXV = open("logs/symbols_TSXV.log", "w")
+
     s = requests.Session()
 
     # Iterate over the alphabet and fetch all TSX/TSXV symbols
@@ -41,6 +44,9 @@ def list_symbols():
 
         resp_TSX = s.get(url_TSX, headers=headers)
         resp_TSXV = s.get(url_TSXV, headers=headers)
+
+        log_TSX.write(url_TSX + "\n")
+        log_TSXV.write(url_TSXV + "\n")
 
         try:
             resp_TSX.raise_for_status()
@@ -58,16 +64,23 @@ def list_symbols():
         for _ in listed_companies_TSX:
             for __ in _["instruments"]:
                 symbols_TSX.append(__["symbol"])
+                log_TSX.write(__["symbol"] + "\n")
 
         for _ in listed_companies_TSXV:
             for __ in _["instruments"]:
                 symbols_TSXV.append(__["symbol"])
+                log_TSXV.write(__["symbol"] + "\n")
 
     symbols_TSX.sort()
     symbols_TSXV.sort()
 
+    # Remove duplicates
+    symbols_TSX = list(dict.fromkeys(symbols_TSX))
+    symbols_TSXV = list(dict.fromkeys(symbols_TSXV))
+
     with open("data/symbols/TSX.json", "w", encoding="utf-8") as out_tsx, open(
-            "data/symbols/TSXV.json", "w", encoding="utf-8") as out_tsxv:
+        "data/symbols/TSXV.json", "w", encoding="utf-8"
+    ) as out_tsxv:
         json.dump(symbols_TSX, out_tsx, ensure_ascii=True)
         json.dump(symbols_TSXV, out_tsxv, ensure_ascii=True)
 
