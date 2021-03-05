@@ -1,12 +1,7 @@
 __pycache__/*
 .mypy_cache/*
 .venv
-venv/*
 .vscode
-reports/*
 logs/*
-data/*
-notes.txt
 .ropeproject/**
 files_from_icriq/*
-config/*
