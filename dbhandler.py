@@ -1,3 +1,5 @@
+"""Handler class for PostgreSQL database access."""
+
 import psycopg2
 import psycopg2.extras
 from dbconfig import config
@@ -8,8 +10,9 @@ class DbHandler:
         super()
 
     def create_connection(self):
-        """ create a database connection to a PostgreSQL database """
+        """Create a database connection to a PostgreSQL database."""
         conn = None
+
         try:
             params = config()
             print("Connecting to db...")
@@ -27,6 +30,7 @@ class DbHandler:
             return conn
 
     def execute(self, conn, sql_statement):
+        """Execute a given SQL statement using the given connection."""
         result = None
         try:
             c = conn.cursor()
@@ -39,6 +43,7 @@ class DbHandler:
             return result
 
     def execute_self_contained(self, sql_statement):
+        """Create a single-use connection to execute the given SQL statement."""
         conn = self.create_connection()
 
         result = None
@@ -54,8 +59,8 @@ class DbHandler:
             return result
 
     def insert_quote(self, conn, quote_info):
+        """Insert a TMX quote object in the db with all financial information."""
         result = None
-        # psycopg2.extras.register_hstore(conn)
 
         try:
             c = conn.cursor()
@@ -91,8 +96,6 @@ class DbHandler:
                     EXCLUDED.__typename)
                     
                     RETURNING symbol;"""
-
-            # print(c.mogrify(sql, quote_info))
 
             c.execute(sql, quote_info)
             result = c.fetchone()

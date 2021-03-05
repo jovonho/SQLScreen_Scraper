@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS quotes (
-    symbol text primary key,
-    name text not null,
+    symbol text,
+    name text,
     price numeric,
     priceChange numeric,
     percentChange numeric,

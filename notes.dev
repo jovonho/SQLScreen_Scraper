@@ -9,8 +9,9 @@
   IT WORKS!
 - We can get quote information for the day as well as timeseries information in given minute intervals for a daterange in unix timestamps
 -- 6 months of data in 60min intervals weighs 218KB
--- 1 yr of data in 30min intervals is about 1 MB --> 4.8 GB for 1 yr of each (4800) stock.
---- Could also dynamically fetch    
+-- 1 yr of data in 30min intervals is about 1 MB --> 4.1 GB total for 1 yr of each (4100) stock.
+-- Some stocks have multiple years of data, max offered on tmxmoney is 10y so theoretical max of 41GB of data.
+--- Could also dynamically fetch the chart data when a user clicks on a symbol, but this makes us dependent on tmxmoney being accessible.
 
 
 10 Dec 2020:
