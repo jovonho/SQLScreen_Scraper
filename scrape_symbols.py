@@ -9,7 +9,7 @@ import sys
 import argparse
 import time
 import requests
-import quote as quote
+import getquote as getquote
 from dbhandler import DbHandler
 
 if __name__ == "__main__":
@@ -44,6 +44,7 @@ if __name__ == "__main__":
     elif args.range:
         all_symbols = [x for x in all_symbols if x >= args.range[0] and x <= args.range[1]]
 
+    # To test parallel process launch, remove after
     from random import randint
     from time import sleep
 
@@ -60,7 +61,7 @@ if __name__ == "__main__":
     conn = db_handler.create_connection()
 
     for symbol in all_symbols:
-        quote.get_quote(s, conn, symbol)
+        getquote.get_quote(s, conn, symbol)
 
     print("Finished scraping")
 

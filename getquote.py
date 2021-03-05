@@ -6,15 +6,23 @@ Examples of returned data can be found in ./data/quotes/ and ./data/timeseries/
 Called by scrape_symbols.py on each symbol. 
 
 To scrape a single symbol, call directly from the command line as:
-python quote.py <symbol>
+python getquote.py <symbol>
 """
 
+import argparse
 import requests
 import json
+import time
+
 from datetime import datetime
 from dbhandler import DbHandler
-import time
-import sys
+
+
+class NoSuchSymbolError(Exception):
+    """Raised when a symbol is not listed on TMX exchanges."""
+
+    pass
+
 
 # Database object
 db = DbHandler()
@@ -32,6 +40,7 @@ def get_quote(session, connection, symbol: str) -> None:
     symbol - The symbol to parse
     """
 
+    # HTTP headers used to make the call, copied from obeserved network traffic
     headers = {
         "authority": "app-money.tmx.com",
         "pragma": "no-cache",
@@ -50,6 +59,7 @@ def get_quote(session, connection, symbol: str) -> None:
         "sec-fetch-dest": "empty",
     }
 
+    # Graphql request, copied from obeserved network traffic
     request_body = {
         "operationName": "getQuoteBySymbol",
         "variables": {"symbol": symbol, "locale": "en"},
@@ -90,7 +100,13 @@ def get_quote(session, connection, symbol: str) -> None:
         result = db.insert_quote(connection, quote_tuple)
 
         end_time = time.perf_counter()
-        print(f"Scraped {result[0]} in {end_time - start_time} s")
+        total_time = round(end_time - start_time, 4)
+        
+        print(f"Scraped {result[0]} in {total_time} s")
+    elif r.status_code == 404:
+        raise NoSuchSymbolError(f"Error: Symbol {symbol} does not exist.")
+    else:
+        raise Exception(f"Error fetching symbol.\n\tStatus: {r.status_code}\n\tReason: {r.reason}")
 
 
 def get_time_series(symbol: str, start_date: str, end_date: str, interval_min: int = 30) -> None:
@@ -152,20 +168,30 @@ def get_time_series(symbol: str, start_date: str, end_date: str, interval_min: i
         with open("data/timeseries/" + symbol + "_ts.json", "w", encoding="utf-8") as outfile:
             data = json.loads(r.text)
             json.dump(data, outfile, indent=4)
+    elif r.status_code == 400:
+        raise NoSuchSymbolError("The symbol does not exist.")
+    else:
+        raise Exception(
+            "Error fetching symbol.\nStatus: " + r.status_code + "\nReason: " + r.reason
+        )
 
 
 if __name__ == "__main__":
 
-    if len(sys.argv) != 2:
-        print(f"Usage: {sys.argv[0]} <symbol>")
-        exit()
+    parser = argparse.ArgumentParser(description="Get a symbol's current quote from TMX.")
+    parser.add_argument("symbol", help="The symbol to quote.")
+    args = parser.parse_args()
 
-    symbol = sys.argv[1]
     session = requests.Session()
 
     conn = db.create_connection()
 
-    get_quote(session, conn, symbol)
+    try:
+        get_quote(session, conn, args.symbol)
+    except NoSuchSymbolError as e:
+        print(e)
+    except Exception as e:
+        print(e)
 
     # Uncomment to try the timeseries function.
     # get_time_series("HIVE", "20191105", "20201105")
