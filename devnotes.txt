@@ -1,0 +1,41 @@
+3 Nov 2020:
+- Tried parsing the page using python requests. The server notices we don't have javascript enabled and refuses to serve the content.
+
+5 Nov 2020:
+- Tried using requests_html which can render the javascript but this also failed.
+- Looking at the page's requests, it queries the tmx graphql API to fetch all the stock information. 
+  I tried to recreate this call but received a 405 not allowed exception. 
+- Scratch that, I'm dumb as shit, I was POSTing to the wrong url. 
+  IT WORKS!
+- We can get quote information for the day as well as timeseries information in given minute intervals for a daterange in unix timestamps
+-- 6 months of data in 60min intervals weighs 218KB
+-- 1 yr of data in 30min intervals is about 1 MB --> 4.1 GB total for 1 yr of each (4100) stock.
+-- Some stocks have multiple years of data, max offered on tmxmoney is 10y so theoretical max of 41GB of data.
+--- Could also dynamically fetch the chart data when a user clicks on a symbol, but this makes us dependent on tmxmoney being accessible.
+
+
+10 Dec 2020:
+- some fields (like peRatio, perhaps all numeric types) are empty string when empty
+-- could cause DB type compatibility problems.
+--- Changing them to None before inserting in db
+
+- Ran initial version: with NO rate limiting
+  Scraping each symbol takes about .5 s on average, so about 40min to scrape all 4800 sequentially.
+  If I run TSX and TSXV in parallel then it'll take about 25 min.
+  This is acceptable for me right now since we will always have at least 12h to scrape the data.
+  Might get blocked though, since there is no rate limiting atm.
+  Can imagine having a param to say, scrape over x amount of time so we can speed it up in case of failure.
+  - Ideally users would have access to the day's data ASAP to run their queries. So the faster it is the quicker.
+  - If we split the 4800 equally and run many processes in parallel that will be the easiest way to fasten it for now.
+    Can easily bring the time down to 10 min. (look at numpy)
+
+05 Mar 2021:
+- Parallelized scraping with subprocesses. The whole thing takes <4 min now.  
+
+TODO:
+- Have the symbols file check for symbols that are no longer listed and remove them from the DB 
+- Find a good timeseries database!
+- Implement Proper Logging
+- Optimize for time:
+    - Try sharing sessions to increase perf
+    - Try asyncIO

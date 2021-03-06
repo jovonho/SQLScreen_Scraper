@@ -1,32 +1,60 @@
+"""Handler class for PostgreSQL database access.
+
+Default DB Config file is ./config/db.ini
+"""
+
+from numpy import ERR_CALL
 import psycopg2
 import psycopg2.extras
-from dbconfig import config
+
+from configparser import SafeConfigParser
+
+# Config file to use
+configfile = "./config/db.ini"
 
 
 class DbHandler:
     def __init__(self):
         super()
 
+    def config(self, filename=configfile):
+        """Load the PostgreSQL configuration file."""
+
+        section = "postgresql"
+        parser = SafeConfigParser()
+        parser.read(filename)
+
+        db = {}
+        if parser.has_section(section):
+            params = parser.items(section)
+            for param in params:
+                db[param[0]] = param[1]
+        else:
+            raise Exception(f"Section {section} not found in the {filename} file")
+
+        return db
+
     def create_connection(self):
-        """ create a database connection to a PostgreSQL database """
+        """Create a database connection to a PostgreSQL database."""
         conn = None
+
         try:
-            params = config()
-            print("Connecting to db...")
+            params = self.config()
             conn = psycopg2.connect(**params)
 
             cur = conn.cursor()
             cur.execute("SELECT version()")
-            db_version = cur.fetchone()
-            print(f"PostgreSQL version {db_version}")
+            db_version = cur.fetchone()[0].split(",")[0]
+            print(f"Connected to {db_version}")
             cur.close()
 
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
-        finally:
-            return conn
+            raise Exception(error)
+
+        return conn
 
     def execute(self, conn, sql_statement):
+        """Execute a given SQL statement using the given connection."""
         result = None
         try:
             c = conn.cursor()
@@ -39,6 +67,7 @@ class DbHandler:
             return result
 
     def execute_self_contained(self, sql_statement):
+        """Create a single-use connection to execute the given SQL statement."""
         conn = self.create_connection()
 
         result = None
@@ -54,8 +83,8 @@ class DbHandler:
             return result
 
     def insert_quote(self, conn, quote_info):
+        """Insert a TMX quote object in the db with all financial information."""
         result = None
-        # psycopg2.extras.register_hstore(conn)
 
         try:
             c = conn.cursor()
@@ -91,8 +120,6 @@ class DbHandler:
                     EXCLUDED.__typename)
                     
                     RETURNING symbol;"""
-
-            # print(c.mogrify(sql, quote_info))
 
             c.execute(sql, quote_info)
             result = c.fetchone()

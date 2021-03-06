@@ -1,18 +1,24 @@
-from dbhandler import DbHandler as db
+"""Create the quotes table if it does not exist."""
 
-
-db_handler = db()
+from dbhandler import DbHandler
 
 
 def create_quotes_table(connection):
-    sql_create_quotes_table = open("create_table_quotes.sql", "r", encoding="utf-8").read()
-    db_handler.execute(connection, sql_create_quotes_table)
+    sql_create_quotes_table = open("./sql/create_table_quotes.sql", "r", encoding="utf-8").read()
+    db.execute(connection, sql_create_quotes_table)
 
 
 if __name__ == "__main__":
 
-    conn = db_handler.create_connection()
+    print("\n############ Creating the quotes table ############\n")
 
-    create_quotes_table(conn)
+    db = DbHandler()
+    try:
+        conn = db.create_connection()
+        create_quotes_table(conn)
+        conn.commit()
+    except Exception as e:
+        print("Error: Could not create table!")
+        print(e)
 
-    conn.commit()
+    print("Table is all good!")

@@ -1,6 +1,6 @@
-CREATE TABLE IF NOT EXISTS quotes (
-    symbol varchar(8) primary key,
-    name text not null,
+    id,
+    symbol varchar(8),
+    name text,
     price numeric,
     priceChange numeric,
     percentChange numeric,
@@ -54,8 +54,3 @@ CREATE TABLE IF NOT EXISTS quotes (
     dividend3Years numeric,
     dividend5Years numeric,
     datatype text,
-    __typename text,
-
-    UNIQUE (symbol, name)
-);
-
