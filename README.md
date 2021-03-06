@@ -5,10 +5,10 @@
 First, copy this repository on your local machine with `git clone https://github.com/jovonho/TmxScreen_Scraper.git destination`.
 
 ### Set up PostgreSQL
-Download PostgreSQL from https://www.postgresql.org/download/ and install it (help: https://www.postgresql.org/docs/13/tutorial-install.html).
-I used username `postgres`, password `postgresql12345$$` and the default port of `5432`.
-Once installed, open a command lien and login to your postgres server with `psql -U <username>`. 
-At the psql command line, create the database with `create database tmx encoding 'UTF8' template template0 lc_collate 'C' lc_ctype 'en_US.UTF8';`.
+Download PostgreSQL from https://www.postgresql.org/download/ and install it (help: https://www.postgresql.org/docs/13/tutorial-install.html).\ 
+I used username `postgres`, password `postgresql12345$$` and the default port of `5432`.\ 
+Once installed, open a command lien and login to your postgres server with `psql -U <username>`.\ 
+At the psql command line, create the database with `create database tmx encoding 'UTF8' template template0 lc_collate 'C' lc_ctype 'en_US.UTF8';`.\ 
 
 ### Set up Python Virtual Env
 This project uses a python virtual environment.
