@@ -2,7 +2,8 @@
 ## Installation Instructions
 
 ### Copy this repo
-First, copy this repo locally with `git clone https://github.com/jovonho/TmxScreen_Scraper.git destination`.
+First, copy this repo locally with `git clone https://github.com/jovonho/TmxScreen_Scraper.git destination`.  
+Create and checkout a new branch with `git checkout -b <branchname>`.
 
 ### Set up PostgreSQL
 Download PostgreSQL from https://www.postgresql.org/download/ and install it (https://www.postgresql.org/docs/13/tutorial-install.html).  
