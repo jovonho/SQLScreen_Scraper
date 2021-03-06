@@ -101,7 +101,7 @@ def get_quote(session, connection, symbol: str) -> None:
 
         end_time = time.perf_counter()
         total_time = round(end_time - start_time, 4)
-        
+
         print(f"Scraped {result[0]} in {total_time} s")
     elif r.status_code == 404:
         raise NoSuchSymbolError(f"Error: Symbol {symbol} does not exist.")
@@ -169,11 +169,9 @@ def get_time_series(symbol: str, start_date: str, end_date: str, interval_min: i
             data = json.loads(r.text)
             json.dump(data, outfile, indent=4)
     elif r.status_code == 400:
-        raise NoSuchSymbolError("The symbol does not exist.")
+        raise NoSuchSymbolError(f"Symbol {symbol} does not exist.")
     else:
-        raise Exception(
-            "Error fetching symbol.\nStatus: " + r.status_code + "\nReason: " + r.reason
-        )
+        raise Exception(f"Error fetching {symbol}.\nStatus: {r.status_code}\nReason: {r.reason}")
 
 
 if __name__ == "__main__":

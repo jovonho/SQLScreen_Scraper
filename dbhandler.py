@@ -3,6 +3,7 @@
 Default DB Config file is ./config/db.ini
 """
 
+from numpy import ERR_CALL
 import psycopg2
 import psycopg2.extras
 
@@ -48,9 +49,9 @@ class DbHandler:
             cur.close()
 
         except (Exception, psycopg2.DatabaseError) as error:
-            print(error)
-        finally:
-            return conn
+            raise Exception(error)
+
+        return conn
 
     def execute(self, conn, sql_statement):
         """Execute a given SQL statement using the given connection."""

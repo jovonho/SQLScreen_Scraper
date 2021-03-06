@@ -48,22 +48,28 @@ if __name__ == "__main__":
     from random import randint
     from time import sleep
 
-    sleep(randint(1, 10))
+    # i = randint(0, 5)
+    # while i > 0:
+    #     print(i)
+    #     i = i - 1
 
     print(
         f"Preparing to scrape symbols from {all_symbols[0]} to {all_symbols[-1]} ({len(all_symbols)} symbols) on {exchange}"
     )
-
-    exit()
 
     s = requests.Session()
     db_handler = DbHandler()
     conn = db_handler.create_connection()
 
     for symbol in all_symbols:
-        getquote.get_quote(s, conn, symbol)
-
-    print("Finished scraping")
+        try:
+            getquote.get_quote(s, conn, symbol)
+        except Exception as e:
+            print(e)
+            continue
 
     end_time = time.perf_counter()
-    print(f"Total time: {end_time - start_time} s")
+    total_time = int(round(end_time - start_time, 0))
+    print(
+        f"Finished. Scraped from {all_symbols[0]} to {all_symbols[-1]} ({len(all_symbols)} symbols) on {exchange} in {total_time} s"
+    )

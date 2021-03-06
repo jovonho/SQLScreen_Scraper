@@ -1,28 +1,40 @@
+"""Launch the TMXSceen Scraper Updater.
+
+Perform all required initialization and scrape all symbols of the TSX and TSXV:
+
+1) Launch dbinit.py if requested
+2) Launch symbols.py to collect symbols
+3) Launch scrape_symbols in multiple parallel processes """
+
 import argparse
 import json
+import subprocess
 import numpy
 import sys
+import time
 
-from symbols import list_symbols
-from subprocess import CREATE_NEW_CONSOLE, Popen, PIPE
-
+import subprocess
 
 if __name__ == "__main__":
 
+    start = time.time()
+
     parser = argparse.ArgumentParser(
-        description="Create list of symbols and scrape them all storing results in the DB."
+        epilog=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter
+    )
+    parser.add_argument(
+        "-db", "--create-table", action="store_true", help="Create the quotes table"
     )
     args = parser.parse_args()
 
-    print("############ Collecting symbols to scrape ############\n")
+    if args.create_table:
+        # Call dbinit.py to create the quotes table
+        subprocess.call([sys.executable, "dbinit.py"])
 
-    # num_symbols_tsx, num_symbols_tsxv = list_symbols()
-    num_symbols_tsx, num_symbols_tsxv = 2432, 1673
+    # Call symbols.py to collect symbols
+    subprocess.call([sys.executable, "symbols.py"])
 
-    print("############ Symbols Collected ############\n")
-    print(f"Symbols listed on TSX:\t {num_symbols_tsx}")
-    print(f"Symbols listed on TSXV:\t {num_symbols_tsxv}")
-    print(f"Total:\t\t\t {num_symbols_tsx + num_symbols_tsxv}")
+    time.sleep(1)
 
     # Read the symbols from the previsouly written files
     symbols_TSX = json.load(open("data/symbols/TSX.json", "r"))
@@ -30,41 +42,35 @@ if __name__ == "__main__":
 
     # Split the symbol lists into chunks that we will scrape in parallel
     tsx_split = numpy.array_split(symbols_TSX, 4)
-    tsxv_split = numpy.array_split(symbols_TSXV, 2)
-    # print("\nRecommended splits:")
+    tsxv_split = numpy.array_split(symbols_TSXV, 3)
 
-    processes = []
+    procs = []
 
-    for split in tsx_split:
-        # print(f"\tTSX {split[0]} {split[-1]}")
-        processes.append(
-            Popen(
-                [sys.executable, "./scrape_symbols.py", "TSX", "-r", split[0], split[-1]],
-                stdout=PIPE,
-                stderr=PIPE,
-            )
+    # Create a subprocess for each symbol chunk using Popen to launch scrape_symbols.py
+    for symbols in tsx_split:
+        print(f"Splitting TSX into subprocess covering {symbols[0]} to {symbols[-1]}")
+        p = subprocess.Popen(
+            [sys.executable, "scrape_symbols.py", "TSX", "-r", symbols[0], symbols[-1]]
         )
+        procs.append(p)
 
-    for split in tsxv_split:
-        processes.append(
-            Popen(
-                [sys.executable, "./scrape_symbols.py", "TSXV", "-r", split[0], split[-1]],
-                stdout=PIPE,
-                stderr=PIPE,
-            )
+    for symbols in tsxv_split:
+        print(f"Splitting TSXV into subprocess covering {symbols[0]} to {symbols[-1]}")
+        p = subprocess.Popen(
+            [sys.executable, "scrape_symbols.py", "TSXV", "-r", symbols[0], symbols[-1]]
         )
+        procs.append(p)
 
-    finished = 0
-    while True:
-        for proc in processes:
-            proc.poll()
-            print(proc.stdout.readline())
+    print("\n############ Preparing to Scrape ############\n")
 
-        # print(f"\tTSXV {split[0]} {split[-1]}")
+    # Wait for all subprocesses to finish
+    for p in procs:
+        p.communicate()
 
-    # TSX AAB DXG
-    # TSX DXM JFS.UN
-    # TSX JOSE SHLE
-    # TSX SHOP ZZZD
-    # TSXV A LL
-    # TSXV LLG ZUM
+    end = time.time()
+    total_time = end - start
+    min, sec = int(total_time / 60), int(round(total_time % 60, 0))
+
+    print("\n############ All Done! ############\n")
+
+    print(f"TMXSceen Scraper completed in {min} min {sec} s")

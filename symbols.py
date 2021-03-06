@@ -4,6 +4,7 @@ import argparse
 import requests
 import string
 import json
+import time
 
 
 def list_symbols():
@@ -22,7 +23,7 @@ def list_symbols():
 
     # Iterate over the alphabet and fetch all TSX/TSXV symbols
     for letter in alphabet:
-        print(f"Looking for companies that start with {letter}:")
+        print(f"\n\nCompanies starting with letter {letter}:")
 
         url_TSX = "https://www.tsx.com/json/company-directory/search/tsx/" + letter
         url_TSXV = "https://www.tsx.com/json/company-directory/search/tsxv/" + letter
@@ -47,12 +48,12 @@ def list_symbols():
         for _ in listed_companies_TSX:
             for __ in _["instruments"]:
                 symbols_TSX.append(__["symbol"])
-                print("\tFound " + __["symbol"])
+                print(__["symbol"], end=" ")
 
         for _ in listed_companies_TSXV:
             for __ in _["instruments"]:
                 symbols_TSXV.append(__["symbol"])
-                print("\tFound " + __["symbol"])
+                print(__["symbol"], end=" ")
 
     symbols_TSX.sort()
     symbols_TSXV.sort()
@@ -67,7 +68,7 @@ def list_symbols():
         json.dump(symbols_TSX, out_tsx, ensure_ascii=True)
         json.dump(symbols_TSXV, out_tsxv, ensure_ascii=True)
 
-    print("\nSuccessfully wrote files:\n\t./data/symbols/TSX.json\n\t./data/symbols/TSXV.json\n")
+    print("\n\nSuccessfully wrote files:\n\t./data/symbols/TSX.json\n\t./data/symbols/TSXV.json\n")
 
     return len(symbols_TSX), len(symbols_TSXV)
 
@@ -79,12 +80,12 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    print("############ Creating symbols list files ############\n")
+    print("\n############ Collecting symbols to scrape ############")
+    time.sleep(1)
 
     num_symbols_tsx, num_symbols_tsxv = list_symbols()
-    # num_symbols_tsx, num_symbols_tsxv = 2432, 1673
 
-    print("---------------------------")
+    print("############ Symbols Collected ############\n")
     print(f"Symbols listed on TSX:\t {num_symbols_tsx}")
     print(f"Symbols listed on TSXV:\t {num_symbols_tsxv}")
     print(f"Total:\t\t\t {num_symbols_tsx + num_symbols_tsxv}")

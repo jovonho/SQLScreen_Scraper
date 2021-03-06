@@ -10,13 +10,15 @@ def create_quotes_table(connection):
 
 if __name__ == "__main__":
 
+    print("\n############ Creating the quotes table ############\n")
+
     db = DbHandler()
-    print("Creating quotes table if it does not exist...")
-    conn = db.create_connection()
     try:
+        conn = db.create_connection()
         create_quotes_table(conn)
         conn.commit()
-        print("All good!")
     except Exception as e:
+        print("Error: Could not create table!")
         print(e)
-        print("Could not create table.")
+
+    print("Table is all good!")

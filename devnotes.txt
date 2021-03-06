@@ -29,6 +29,9 @@
   - If we split the 4800 equally and run many processes in parallel that will be the easiest way to fasten it for now.
     Can easily bring the time down to 10 min. (look at numpy)
 
+05 Mar 2021:
+- Parallelized scraping with subprocesses. The whole thing takes <4 min now.  
+
 TODO:
 - Have the symbols file check for symbols that are no longer listed and remove them from the DB 
 - Find a good timeseries database!
