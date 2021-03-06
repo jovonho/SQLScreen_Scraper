@@ -18,11 +18,9 @@ That way, if a new version of a package was to break some functionality, the pro
 
 From the project directory, run `py -m venv .venv` to create the virtual env in the `.venv` directory.  
 
-Then, run `.venv/Scripts/activate` to activate it.  
+Then, run `.venv/Scripts/activate` to activate it. Your command prompt should change to reflect this.
   
-The virtual env is a   
-
-Install the requirement dependencies using `py -m pip install -r requirements.txt`.  
+Now, install the project dependencies using `py -m pip install -r requirements.txt`.  
 
 ### Init project and launch
 Check `config/db.ini` and modify it with your info if necessary.  
