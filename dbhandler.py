@@ -89,13 +89,13 @@ class DbHandler:
         try:
             c = conn.cursor()
 
-            sql = """INSERT INTO quotes (symbol, name, price, priceChange, percentChange, exchangeName, exShortName, exchangeCode, marketPlace, 
+            sql = """INSERT INTO quote (symbol, name, price, priceChange, percentChange, exchangeName, exShortName, exchangeCode, marketPlace, 
                     sector, industry, volume, openPrice, dayHigh, dayLow, MarketCap, MarketCapAllClasses, peRatio, prevClose, dividendFrequency, 
                     dividendYield, dividendAmount, dividendCurrency, beta, eps, exDividendDate, shortDescription, longDescription, website, email,
                     phoneNumber, fullAddress, employees, shareOutStanding, totalDebtToEquity, totalSharesOutStanding, sharesESCROW, vwap, 
                     dividendPayDate, weeks52high, weeks52low, alpha, averageVolume10D, averageVolume30D, averageVolume50D, priceToBook, 
                     priceToCashFlow, returnOnEquity, returnOnAssets, day21MovingAvg, day50MovingAvg, day200MovingAvg, dividend3Years, 
-                    dividend5Years, datatype, __typename)  
+                    dividend5Years, datatype, typename)  
                     VALUES 
                     (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                     ON CONFLICT (symbol) DO UPDATE SET 
@@ -105,7 +105,7 @@ class DbHandler:
                     phoneNumber, fullAddress, employees, shareOutStanding, totalDebtToEquity, totalSharesOutStanding, sharesESCROW, vwap, 
                     dividendPayDate, weeks52high, weeks52low, alpha, averageVolume10D, averageVolume30D, averageVolume50D, priceToBook, 
                     priceToCashFlow, returnOnEquity, returnOnAssets, day21MovingAvg, day50MovingAvg, day200MovingAvg, dividend3Years, 
-                    dividend5Years, datatype, __typename)  
+                    dividend5Years, datatype, typename)  
                     = 
                     (EXCLUDED.name, EXCLUDED.price, EXCLUDED.priceChange, EXCLUDED.percentChange, EXCLUDED.exchangeName, EXCLUDED.exShortName, 
                     EXCLUDED.exchangeCode, EXCLUDED.marketPlace, EXCLUDED.sector, EXCLUDED.industry, EXCLUDED.volume, EXCLUDED.openPrice, 
@@ -117,7 +117,7 @@ class DbHandler:
                     EXCLUDED.weeks52low, EXCLUDED.alpha, EXCLUDED.averageVolume10D, EXCLUDED.averageVolume30D, EXCLUDED.averageVolume50D, 
                     EXCLUDED.priceToBook, EXCLUDED.priceToCashFlow, EXCLUDED.returnOnEquity, EXCLUDED.returnOnAssets, EXCLUDED.day21MovingAvg, 
                     EXCLUDED.day50MovingAvg, EXCLUDED.day200MovingAvg, EXCLUDED.dividend3Years, EXCLUDED.dividend5Years, EXCLUDED.datatype, 
-                    EXCLUDED.__typename)
+                    EXCLUDED.typename)
                     
                     RETURNING symbol;"""
 

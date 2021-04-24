@@ -25,16 +25,19 @@ if __name__ == "__main__":
     parser.add_argument(
         "-db", "--create-table", action="store_true", help="Create the quotes table"
     )
+    parser.add_argument(
+        "-ss", "--skip-symbols", action="store_true", help="Skip symbol list scraping"
+    )
     args = parser.parse_args()
 
     if args.create_table:
         # Call dbinit.py to create the quotes table
         subprocess.call([sys.executable, "dbinit.py"])
 
-    # Call symbols.py to collect symbols
-    subprocess.call([sys.executable, "symbols.py"])
-
-    time.sleep(1)
+    if not args.skip_symbols:
+        # Call symbols.py to collect symbols
+        subprocess.call([sys.executable, "symbols.py"])
+        time.sleep(1)
 
     # Read the symbols from the previsouly written files
     symbols_TSX = json.load(open("data/symbols/TSX.json", "r"))

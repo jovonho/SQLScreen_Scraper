@@ -5,6 +5,7 @@ import requests
 import string
 import json
 import time
+import uuid
 
 
 def list_symbols():
