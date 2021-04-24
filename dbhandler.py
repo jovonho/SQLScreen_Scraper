@@ -82,7 +82,7 @@ class DbHandler:
             conn.commit()
             return result
 
-    def insert_quote(self, conn, quote_info):
+    def insert_quote(self, conn, quote_info, timestamp):
         """Insert a TMX quote object in the db with all financial information."""
         result = None
 
@@ -95,9 +95,9 @@ class DbHandler:
                     phoneNumber, fullAddress, employees, shareOutStanding, totalDebtToEquity, totalSharesOutStanding, sharesESCROW, vwap, 
                     dividendPayDate, weeks52high, weeks52low, alpha, averageVolume10D, averageVolume30D, averageVolume50D, priceToBook, 
                     priceToCashFlow, returnOnEquity, returnOnAssets, day21MovingAvg, day50MovingAvg, day200MovingAvg, dividend3Years, 
-                    dividend5Years, datatype, typename)  
+                    dividend5Years, datatype, typename, lastupdate)  
                     VALUES 
-                    (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                     ON CONFLICT (symbol) DO UPDATE SET 
                     (name, price, priceChange, percentChange, exchangeName, exShortName, exchangeCode, marketPlace, 
                     sector, industry, volume, openPrice, dayHigh, dayLow, MarketCap, MarketCapAllClasses, peRatio, prevClose, dividendFrequency, 
@@ -105,7 +105,7 @@ class DbHandler:
                     phoneNumber, fullAddress, employees, shareOutStanding, totalDebtToEquity, totalSharesOutStanding, sharesESCROW, vwap, 
                     dividendPayDate, weeks52high, weeks52low, alpha, averageVolume10D, averageVolume30D, averageVolume50D, priceToBook, 
                     priceToCashFlow, returnOnEquity, returnOnAssets, day21MovingAvg, day50MovingAvg, day200MovingAvg, dividend3Years, 
-                    dividend5Years, datatype, typename)  
+                    dividend5Years, datatype, typename, lastupdate)  
                     = 
                     (EXCLUDED.name, EXCLUDED.price, EXCLUDED.priceChange, EXCLUDED.percentChange, EXCLUDED.exchangeName, EXCLUDED.exShortName, 
                     EXCLUDED.exchangeCode, EXCLUDED.marketPlace, EXCLUDED.sector, EXCLUDED.industry, EXCLUDED.volume, EXCLUDED.openPrice, 
@@ -117,11 +117,11 @@ class DbHandler:
                     EXCLUDED.weeks52low, EXCLUDED.alpha, EXCLUDED.averageVolume10D, EXCLUDED.averageVolume30D, EXCLUDED.averageVolume50D, 
                     EXCLUDED.priceToBook, EXCLUDED.priceToCashFlow, EXCLUDED.returnOnEquity, EXCLUDED.returnOnAssets, EXCLUDED.day21MovingAvg, 
                     EXCLUDED.day50MovingAvg, EXCLUDED.day200MovingAvg, EXCLUDED.dividend3Years, EXCLUDED.dividend5Years, EXCLUDED.datatype, 
-                    EXCLUDED.typename)
+                    EXCLUDED.typename, EXCLUDED.lastupdate)
                     
                     RETURNING symbol;"""
 
-            c.execute(sql, quote_info)
+            c.execute(sql, quote_info + (timestamp,))
             result = c.fetchone()
             c.close()
 

@@ -14,7 +14,7 @@ import requests
 import json
 import time
 
-from datetime import datetime
+from datetime import date, datetime
 from dbhandler import DbHandler
 
 
@@ -97,7 +97,7 @@ def get_quote(session, connection, symbol: str) -> None:
         )
 
         # Write results to the db
-        result = db.insert_quote(connection, quote_tuple)
+        result = db.insert_quote(connection, quote_tuple, datetime.utcnow())
 
         end_time = time.perf_counter()
         total_time = round(end_time - start_time, 4)
