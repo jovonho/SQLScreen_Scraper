@@ -82,6 +82,21 @@ class DbHandler:
             conn.commit()
             return result
 
+    def delete_quote(self, conn, symbol):
+        result = None
+        try:
+            c = conn.cursor()
+            sql = """DELETE FROM quote WHERE symbol=%s;"""
+            c.execute(sql, (symbol,))
+            result = c.fetchone()
+            c.close()
+
+        except (Exception, psycopg2.Error) as e:
+            print(e)
+        finally:
+            conn.commit()
+            return result
+
     def insert_quote(self, conn, quote_info, timestamp):
         """Insert a TMX quote object in the db with all financial information."""
         result = None
@@ -95,9 +110,9 @@ class DbHandler:
                     phoneNumber, fullAddress, employees, shareOutStanding, totalDebtToEquity, totalSharesOutStanding, sharesESCROW, vwap, 
                     dividendPayDate, weeks52high, weeks52low, alpha, averageVolume10D, averageVolume30D, averageVolume50D, priceToBook, 
                     priceToCashFlow, returnOnEquity, returnOnAssets, day21MovingAvg, day50MovingAvg, day200MovingAvg, dividend3Years, 
-                    dividend5Years, datatype, typename, lastupdate)  
+                    dividend5Years, datatype, typename, suspended, lastupdate)  
                     VALUES 
-                    (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                    (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                     ON CONFLICT (symbol) DO UPDATE SET 
                     (name, price, priceChange, percentChange, exchangeName, exShortName, exchangeCode, marketPlace, 
                     sector, industry, volume, openPrice, dayHigh, dayLow, MarketCap, MarketCapAllClasses, peRatio, prevClose, dividendFrequency, 
@@ -105,7 +120,7 @@ class DbHandler:
                     phoneNumber, fullAddress, employees, shareOutStanding, totalDebtToEquity, totalSharesOutStanding, sharesESCROW, vwap, 
                     dividendPayDate, weeks52high, weeks52low, alpha, averageVolume10D, averageVolume30D, averageVolume50D, priceToBook, 
                     priceToCashFlow, returnOnEquity, returnOnAssets, day21MovingAvg, day50MovingAvg, day200MovingAvg, dividend3Years, 
-                    dividend5Years, datatype, typename, lastupdate)  
+                    dividend5Years, datatype, typename, suspended, lastupdate)  
                     = 
                     (EXCLUDED.name, EXCLUDED.price, EXCLUDED.priceChange, EXCLUDED.percentChange, EXCLUDED.exchangeName, EXCLUDED.exShortName, 
                     EXCLUDED.exchangeCode, EXCLUDED.marketPlace, EXCLUDED.sector, EXCLUDED.industry, EXCLUDED.volume, EXCLUDED.openPrice, 
@@ -117,7 +132,7 @@ class DbHandler:
                     EXCLUDED.weeks52low, EXCLUDED.alpha, EXCLUDED.averageVolume10D, EXCLUDED.averageVolume30D, EXCLUDED.averageVolume50D, 
                     EXCLUDED.priceToBook, EXCLUDED.priceToCashFlow, EXCLUDED.returnOnEquity, EXCLUDED.returnOnAssets, EXCLUDED.day21MovingAvg, 
                     EXCLUDED.day50MovingAvg, EXCLUDED.day200MovingAvg, EXCLUDED.dividend3Years, EXCLUDED.dividend5Years, EXCLUDED.datatype, 
-                    EXCLUDED.typename, EXCLUDED.lastupdate)
+                    EXCLUDED.typename, EXCLUDED.suspended, EXCLUDED.lastupdate)
                     
                     RETURNING symbol;"""
 

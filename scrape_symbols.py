@@ -44,10 +44,9 @@ if __name__ == "__main__":
     elif args.range:
         all_symbols = [x for x in all_symbols if x >= args.range[0] and x <= args.range[1]]
 
-    # To test parallel process launch, remove after
-    from random import randint
-    from time import sleep
-
+    # Uncomment to test parallel process launch
+    # from random import randint
+    # from time import sleep
     # i = randint(0, 5)
     # while i > 0:
     #     print(i)
@@ -60,10 +59,11 @@ if __name__ == "__main__":
     s = requests.Session()
     db_handler = DbHandler()
     conn = db_handler.create_connection()
+    suspended = json.load(open("data/symbols/suspended.json", "r"))
 
     for symbol in all_symbols:
         try:
-            getquote.get_quote(s, conn, symbol)
+            getquote.get_quote(s, conn, symbol, suspended)
         except Exception as e:
             print(e)
             continue

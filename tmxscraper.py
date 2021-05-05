@@ -4,7 +4,8 @@ Perform all required initialization and scrape all symbols of the TSX and TSXV:
 
 1) Launch dbinit.py if requested
 2) Launch symbols.py to collect symbols
-3) Launch scrape_symbols in multiple parallel processes """
+3) Launch scrape_symbols in multiple parallel processes
+4) Remove delisted symbols from the DB """
 
 import argparse
 import json
@@ -27,6 +28,12 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "-ss", "--skip-symbols", action="store_true", help="Skip symbol list scraping"
+    )
+    parser.add_argument(
+        "-sd",
+        "--skip-delisted",
+        action="store_true",
+        help="Skip removing delisted symbols from the DB",
     )
     args = parser.parse_args()
 
@@ -69,6 +76,11 @@ if __name__ == "__main__":
     # Wait for all subprocesses to finish
     for p in procs:
         p.communicate()
+
+    if not args.skip_delisted:
+        # Call symbols.py to remove delisted symbols from DB
+        subprocess.call([sys.executable, "delisted.py"])
+        time.sleep(1)
 
     end = time.time()
     total_time = end - start

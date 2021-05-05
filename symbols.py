@@ -5,7 +5,78 @@ import requests
 import string
 import json
 import time
-import uuid
+
+
+def list_symbols_to_remove():
+    url_delisted_tsx = "https://www.tsx.com/json/company-directory/delisted/tsx"
+    url_delisted_tsxv = "https://www.tsx.com/json/company-directory/delisted/tsxv"
+
+    url_suspended_tsx = "https://www.tsx.com/json/company-directory/suspended/tsx"
+    url_suspended_tsxv = "https://www.tsx.com/json/company-directory/suspended/tsxv"
+
+    urls_delisted = [url_delisted_tsx, url_delisted_tsxv]
+    urls_suspended = [url_suspended_tsx, url_suspended_tsxv]
+
+    symbols_delisted = []
+    symbols_suspended = []
+
+    s = requests.Session()
+
+    for url in urls_delisted:
+        print("Fecthing symbols to delist")
+        resp = s.get(url)
+
+        try:
+            resp.raise_for_status()
+        except requests.exceptions.HTTPError:
+            print(f"Request failed for url: {url}")
+            next
+
+        data = json.loads(resp.text)["results"]
+
+        for _ in data:
+            symbols_delisted.append(_["symbol"])
+            print(_["symbol"], end=" ")
+
+        symbols_delisted.sort()
+
+        # Remove duplicates
+        symbols_delisted = list(dict.fromkeys(symbols_delisted))
+        print("\nDone")
+
+    for url in urls_suspended:
+        print("Fecthing suspended symbols")
+        resp = s.get(url)
+
+        try:
+            resp.raise_for_status()
+        except requests.exceptions.HTTPError:
+            print(f"Request failed for url: {url}")
+            next
+
+        data = json.loads(resp.text)["results"]
+
+        for _ in data:
+            symbols_suspended.append(_["symbol"])
+            print(_["symbol"], end=" ")
+
+        symbols_suspended.sort()
+
+        # Remove duplicates
+        symbols_suspended = list(dict.fromkeys(symbols_suspended))
+        print("\nDone")
+
+    with open("data/symbols/delisted.json", "w", encoding="utf-8") as out_delisted, open(
+        "data/symbols/suspended.json", "w", encoding="utf-8"
+    ) as out_suspended:
+        json.dump(symbols_delisted, out_delisted, ensure_ascii=True)
+        json.dump(symbols_suspended, out_suspended, ensure_ascii=True)
+
+    print(
+        "\n\nSuccessfully wrote files:\n\t./data/symbols/delisted.json\n\t./data/symbols/suspended.json\n"
+    )
+
+    return len(symbols_delisted), len(symbols_suspended)
 
 
 def list_symbols():
@@ -79,14 +150,34 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(
         description="Collect all symbols currently listed on the TSX and TSXV."
     )
+    parser.add_argument(
+        "-ss", "--skip-symbols", action="store_true", help="Skip scraping symbol lists."
+    )
+    parser.add_argument(
+        "-sr",
+        "--skip-removals",
+        action="store_true",
+        help="Skip scraping suspended and delisted symbols.",
+    )
     args = parser.parse_args()
 
-    print("\n############ Collecting symbols to scrape ############")
-    time.sleep(1)
+    if not args.skip_symbols:
+        print("\n############ Collecting Symbols to Scrape ############")
+        time.sleep(1)
 
-    num_symbols_tsx, num_symbols_tsxv = list_symbols()
+        num_symbols_tsx, num_symbols_tsxv = list_symbols()
 
-    print("############ Symbols Collected ############\n")
-    print(f"Symbols listed on TSX:\t {num_symbols_tsx}")
-    print(f"Symbols listed on TSXV:\t {num_symbols_tsxv}")
-    print(f"Total:\t\t\t {num_symbols_tsx + num_symbols_tsxv}")
+        print("############ Symbols Collected ############\n")
+        print(f"Symbols listed on TSX:\t {num_symbols_tsx}")
+        print(f"Symbols listed on TSXV:\t {num_symbols_tsxv}")
+        print(f"Total:\t\t\t {num_symbols_tsx + num_symbols_tsxv}")
+
+    if not args.skip_removals:
+        print("\n############ Collecting Delisted and Suspended Symbols ############")
+        time.sleep(1)
+
+        num_delisted, num_suspended = list_symbols_to_remove()
+
+        print("############ Symbols Collected ############\n")
+        print(f"Symbols delisted:\t {num_delisted}")
+        print(f"Symbols suspended:\t {num_suspended}")

@@ -1,3 +1,4 @@
+-- Table should be created from Frontend using flask-db and migrate!
 CREATE TABLE IF NOT EXISTS quotes (
     symbol text,
     name text,
@@ -54,7 +55,8 @@ CREATE TABLE IF NOT EXISTS quotes (
     dividend3Years numeric,
     dividend5Years numeric,
     datatype text,
-    __typename text,
+    typename text,
+    lastupdate timestamp,
 
     UNIQUE (symbol, name)
 );

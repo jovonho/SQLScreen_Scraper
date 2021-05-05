@@ -28,7 +28,7 @@ class NoSuchSymbolError(Exception):
 db = DbHandler()
 
 
-def get_quote(session, connection, symbol: str) -> None:
+def get_quote(session, connection, symbol: str, suspended) -> None:
     """Fetch a symbol's data from the TMX graphql API.
 
     Writes the results directly to the database.
@@ -91,6 +91,9 @@ def get_quote(session, connection, symbol: str) -> None:
         # TODO: Add more data processing/formatting here to avoid having to do it in the javascript
         if quote_info["employees"] != "":
             quote_info["employees"] = int(quote_info["employees"])
+
+        # Mark the symbol as suspended if it's in the list
+        quote_info["suspended"] = symbol in suspended
 
         quote_tuple = tuple(
             [quote_info[k] if quote_info[k] != "" else None for k in quote_info.keys()]
