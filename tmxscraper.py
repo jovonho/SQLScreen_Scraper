@@ -31,7 +31,10 @@ if __name__ == "__main__":
     )
     parser.add_argument("-dr", "--dry-run", action="store_true", help="Dry run")
     parser.add_argument(
-        "-t", "time", type=int, help="Time (in seconds) to wait between successive calls to tmx.com"
+        "-t",
+        "--time",
+        type=int,
+        help="Time (in seconds) to wait between successive calls to tmx.com",
     )
     parser.add_argument(
         "-sd",
