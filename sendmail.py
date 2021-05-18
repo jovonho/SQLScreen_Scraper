@@ -6,7 +6,7 @@ def send_email(filename):
     smtp_server = "smtp.gmail.com"
     sender_email = "loic.hovon@gmail.com"
     receiver_email = "loic.hovon@gmail.com"
-    password = os.environ.get("TMXSCRAPER_EMAILPASS") or "idzvseazwldxhqry"
+    password = os.environ.get("TMXSCRAPE_EMAILPASS")
     message = open(filename, "r", encoding="utf8").read()
 
     print(message)
