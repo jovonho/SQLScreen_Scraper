@@ -20,6 +20,12 @@ if __name__ == "__main__":
     parser.add_argument(
         "exchange", choices=["TSX", "TSXV"], help="exchange from which to scrape. TSX or TSXV."
     )
+    parser.add_argument(
+        "-t",
+        "--time",
+        type=int,
+        help="Time in seconds between network calls. To avoid getting blocked.",
+    )
     group = parser.add_mutually_exclusive_group()
     group.add_argument("-s", "--start", help="symbol from which to start scraping")
     group.add_argument(
@@ -37,6 +43,11 @@ if __name__ == "__main__":
     else:
         with open("data/symbols/TSXV.json", "r") as infile:
             all_symbols.extend(json.load(infile))
+
+    if args.time:
+        waittime = args.time
+    else:
+        waittime = 0
 
     # If we specified a start or a range, trim the symbol list
     if args.start:
@@ -67,6 +78,8 @@ if __name__ == "__main__":
         except Exception as e:
             print(e)
             continue
+        # Sleep between each call
+        time.sleep(waittime)
 
     end_time = time.perf_counter()
     total_time = int(round(end_time - start_time, 0))

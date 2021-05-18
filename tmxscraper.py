@@ -29,6 +29,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "-ss", "--skip-symbols", action="store_true", help="Skip symbol list scraping"
     )
+    parser.add_argument("-dr", "--dry-run", action="store_true", help="Dry run")
+    parser.add_argument(
+        "-t", "time", type=int, help="Time (in seconds) to wait between successive calls to tmx.com"
+    )
     parser.add_argument(
         "-sd",
         "--skip-delisted",
@@ -36,6 +40,11 @@ if __name__ == "__main__":
         help="Skip removing delisted symbols from the DB",
     )
     args = parser.parse_args()
+
+    if args.time:
+        waittime = args.time
+    else:
+        waittime = 0
 
     if args.create_table:
         # Call dbinit.py to create the quotes table
@@ -60,7 +69,16 @@ if __name__ == "__main__":
     for symbols in tsx_split:
         print(f"Splitting TSX into subprocess covering {symbols[0]} to {symbols[-1]}")
         p = subprocess.Popen(
-            [sys.executable, "scrape_symbols.py", "TSX", "-r", symbols[0], symbols[-1]]
+            [
+                sys.executable,
+                "scrape_symbols.py",
+                "TSX",
+                "-t",
+                waittime,
+                "-r",
+                symbols[0],
+                symbols[-1],
+            ]
         )
         procs.append(p)
 
