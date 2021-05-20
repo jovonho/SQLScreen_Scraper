@@ -5,6 +5,8 @@ import requests
 import string
 import json
 import time
+import os
+from pathlib import Path
 
 
 def list_symbols_to_remove():
@@ -160,6 +162,10 @@ if __name__ == "__main__":
         help="Skip scraping suspended and delisted symbols.",
     )
     args = parser.parse_args()
+
+    # Create necessary dir if not present
+    if not os.path.isdir("data/symbols"):
+        os.makedirs("data/symbols")
 
     if not args.skip_symbols:
         print("\n############ Collecting Symbols to Scrape ############")
