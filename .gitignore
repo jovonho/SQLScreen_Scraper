@@ -6,5 +6,5 @@ __pycache__/
 files_from_icriq/
 logs/
 unused/
-data/
+data/*
 localstuff/
