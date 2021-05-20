@@ -77,7 +77,7 @@ if __name__ == "__main__":
                 "scrape_symbols.py",
                 "TSX",
                 "-t",
-                waittime,
+                str(waittime),
                 "-r",
                 symbols[0],
                 symbols[-1],
@@ -88,7 +88,16 @@ if __name__ == "__main__":
     for symbols in tsxv_split:
         print(f"Splitting TSXV into subprocess covering {symbols[0]} to {symbols[-1]}")
         p = subprocess.Popen(
-            [sys.executable, "scrape_symbols.py", "TSXV", "-r", symbols[0], symbols[-1]]
+            [
+                sys.executable,
+                "scrape_symbols.py",
+                "TSXV",
+                "-t",
+                str(waittime),
+                "-r",
+                symbols[0],
+                symbols[-1],
+            ]
         )
         procs.append(p)
 
