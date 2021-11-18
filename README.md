@@ -1,8 +1,8 @@
-# TMXScreen Scraper Updater
+# SQLScreen Scraper Updater
 ## Installation Instructions
 
 ### Copy this repo
-First, copy this repo locally with `git clone https://github.com/jovonho/TmxScreen_Scraper.git destination`.  
+First, copy this repo locally with `git clone https://github.com/jovonho/SQLScreen_Scraper.git destination`.  
 Create and checkout a new branch with `git checkout -b <branchname>`.
 
 ### Set up PostgreSQL

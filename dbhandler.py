@@ -3,7 +3,6 @@
 Default DB Config file is ./config/db.ini
 """
 
-from numpy import ERR_CALL
 import psycopg2
 import psycopg2.extras
 

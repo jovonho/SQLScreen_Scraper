@@ -6,7 +6,6 @@ import string
 import json
 import time
 import os
-from pathlib import Path
 
 
 def list_symbols_to_remove():
@@ -87,7 +86,8 @@ def list_symbols():
     alphabet = list(string.ascii_uppercase)
     alphabet.append("0-9")
 
-    user_agent = """Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36 OPR/67.0.3575.53"""
+    user_agent = """Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 
+    (KHTML, like Gecko) Chrome/80.0.3987.122 Safari/537.36 OPR/67.0.3575.53"""
     headers = {"User-Agent": user_agent}
 
     symbols_TSX = []

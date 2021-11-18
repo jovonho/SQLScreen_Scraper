@@ -3,7 +3,7 @@
 Fetches all the info for a given symbol and writes the result to the database.
 Examples of returned data can be found in ./data/quotes/ and ./data/timeseries/
 
-Called by scrape_symbols.py on each symbol. 
+Called by scrape_symbols.py on each symbol.
 
 To scrape a single symbol, call directly from the command line as:
 python getquote.py <symbol>
@@ -14,7 +14,7 @@ import requests
 import json
 import time
 
-from datetime import date, datetime
+from datetime import datetime
 from dbhandler import DbHandler
 
 
